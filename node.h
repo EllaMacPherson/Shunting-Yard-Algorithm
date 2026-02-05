@@ -4,10 +4,11 @@ using namespace std;
 
 class node{
  public:
-  node(node* n, node* r, node* l, int v, char o); // Constructer
+  node(node* n, node* r, node* l, int v); // Constructer
 
-  int value; // for # storage <-- DO I NEEDA EVEN SEPERATE THESE -> check end goal of project
-  char op; // For */^ storage
+  ~node(); //destructer
+
+  char value; // For */^ storage, and numbers
   
   node* next; // For linked list
   node* right; // For binary tree
