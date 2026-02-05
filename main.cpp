@@ -11,9 +11,9 @@ void push(int input, node*& top); // Add something to stack
 node* pop(node*& top); // Remove top value of stack, and return it
 node* peek(node*& top); // Look at top value of stack, and return it
 
-// Queue functions -- double linked list
-void enqueue();
-void dequeue();
+// Queue functions -- linear linked list -- use node* head and node* tail for queue whule node* top is for stack
+void enqueue(); // Add to  tail of queue 
+void dequeue(); // Remove from head of queue 
 
 int main(){
 
