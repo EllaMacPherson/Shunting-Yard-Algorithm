@@ -6,58 +6,86 @@ using namespace std;
 
 // Function declerations
 
-// Stack functions -- linear linked list
-void push(int input, node*& top); // Add something to stack
+// Stack functions
+void push(char input, node*& top); // Add something to stack
 node* pop(node*& top); // Remove top value of stack, and return it
 node* peek(node*& top); // Look at top value of stack, and return it
 
-// Queue functions -- linear linked list -- use node* head and node* tail for queue whule node* top is for stack
-void enqueue(); // Add to  tail of queue 
-void dequeue(); // Remove from head of queue 
+// Queue functions
+void enqueue(node*& front, node*& rear, char input); // Add to  tail of queue 
+node* dequeue(node*& front, node*& rear); // Remove head of queue and return it
 
 int main(){
 
   node* top = NULL; // Top of stack
+
+  node* front = NULL; // front of queue
+  node* rear = NULL; // end of queue
   
-  // Test stack --> should be able to take in int and operators js like queue
+  // Test queue
   char input = '\0';
-  cout<<"What do you want to add to stack?"<<endl;
+  cout<<"What do you want to add to queue?"<<endl;
   cin>>input;
   cin.ignore();
-  push(input, top);
 
-  cout<<top->value<<endl;
+  enqueue(front, rear, input);
+  cout<<front->value<<endl;
 
-  input = 0;
-  cout<<"What do you want to add to stack?"<<endl;
+  cout<<"What do you want to add to queue?"<<endl;
   cin>>input;
   cin.ignore();
-  push(input, top);
-  
-  cout<<top->value<<" " <<endl;
-  cout<<top->next->value<<endl;
 
-  
-  input = 0;
-  cout<<"What do you want to add to stack?"<<endl;
+  enqueue(front, rear, input);
+  cout<<front->value<<rear->value<<endl;
+
+  cout<<"What do you want to add to queue?"<<endl;
   cin>>input;
   cin.ignore();
-  push(input, top);
-  
-  cout<<top->value<<" " <<endl;
-  cout<<top->next->value<<" " <<endl;
-  cout<<top->next->next->value <<endl;
 
-  cout<<"pop test " <<endl;
-  node* x = pop(top);
-  cout<<x->value<<endl;
-  cout<<"New stack: " <<endl;
-  cout<<top->value<<" " <<endl;
-  cout<<top->next->value<<" " <<endl;
+  enqueue(front, rear, input);
+  cout<<front->value<<endl;
+  cout<<front->next->value<<endl;
+  cout<<front->next->next->value<<endl;
+
+  cout<<"dequeue test: " <<endl;
+  node* x = dequeue(front, rear);
+  cout<<front->value<<endl;
+  cout<<front->next->value<<endl;
+
+  cout<<"removed: "<<x->value<<endl;
+}
+
+// Dequeue for queue -- FUNCTIONING
+node* dequeue(node*& front, node*& rear){
+
+  node* oldFront = front;
+
+  // Set new front to whats after it in queue
+  front = front->next;
+
+  // If our new front is NULL than rear must be made the same
+  if(front == NULL){
+    rear = NULL;
+  }
+
+  return oldFront;
+}
+
+// Enqueue for queue -- FUNCTIONING 
+void enqueue(node*& front, node*& rear, char input){
+
+  // Create new node with no next pointer
+  node* x = new node(NULL, NULL, NULL, input);
   
-  cout<<"peek test: "<<endl;
-  node* y = peek(top);
-  cout<<y->value<<endl;
+  // Queue is empty
+  if(front == NULL && rear == NULL){
+    front = x;
+    rear = x;
+  }
+  else{ // There is something in the queue
+    rear->next = x;
+    rear = x;
+  }
   
 }
 
@@ -77,7 +105,7 @@ node* pop(node*& top){
 }
 
 // Push for stack -- FUNCTIONING
-void push(int input, node*& top){
+void push(char input, node*& top){
 
   if(top == NULL){ // There is nothing else in the list
     top = new node(NULL, NULL, NULL, input); //replace char with input if need to
