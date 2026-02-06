@@ -17,7 +17,7 @@ void enqueue(node*& front, node*& rear, char input); // Add to  tail of queue
 node* dequeue(node*& front, node*& rear); // Remove head of queue and return it
 
 // Shunting Yard Algorithm
-void shuntingyard(string input); //Puts operators in stack, integers in queue, handle parantheses accordingly, than outputs the queue
+void shuntingyard(string input, node*& top, node*& front, node*& rear); //Puts operators in stack, integers in queue, handle parantheses accordingly, than outputs the queue
 
 // Overall notes:
 //   - Take in infix notation -> convert to post fix with: _____
@@ -40,8 +40,6 @@ int main(){
 
   getline(cin, input);
 
-  cout<<input<<endl;
-
   // Remove spaces from string
   for(int i = 0; i < input.length(); i++){
     if(input[i] != ' '){
@@ -49,6 +47,7 @@ int main(){
     }
   }
 
+  cout<<noSpaces<<endl;
   // Get postfix
   shuntingyard(noSpaces, top, front, rear);
   
@@ -57,23 +56,70 @@ int main(){
 // Convert infix input to postfix
 void shuntingyard(string input, node*& top, node*& front, node*& rear){
   
-  // Iterator through each 
+  // Iterate through each char
   for(int i = 0; i < input.length(); i++){
     // If its a number
     if(int(input[i]) >= 48 && int(input[i]) <= 57){
-      // Push to the stack
-      push(input[i], top);
+      // add it to queue
+      enqueue(front, rear, input[i]);
     }
-    // If its an operator or parantheses
-    else if(){
-      if(){
-	// Do extra operation for parantheses
+    
+    // If its an operator or left parantheses
+    else if(input[i] == '+' || input[i] == '-' || input[i] == '*' ||
+	    input[i] == '/' ||input[i] == '('){
+      // Send it to the stack
+      push(input[i], top);
+
+    }
+
+    // BROKEN HERE -> MAYBE USE PEEK FUNC AT POINTS??????
+    // If its a right parantheses
+    else if(input[i] == ')'){
+      // Move items from stack into queue until we reach the
+      if(top->value == ')'){
+	node* d = pop(top);
+	delete d;
+	continue;
+      }
+      else{
+	char current = '\0';
+	while(current != '('){
+	  node* temp = pop(top);
+
+	  current = temp->value; // Current becomes what just was the top of the queue
+	  if(current == '('){
+	    break;
+	  }
+	  
+	  enqueue(front, rear, current); // Throw that non-paranthese into the queue
+	  
+	}
+	
+	// Once it hits that right paranthese pop it from the stack and delete it instead of moving to queue, and do nothing with input[i] so it gets skipped over and forever lost in the void YAYAYAYYA!!!
+	node* d = pop(top);
+	delete d;
+	//input.erase(i, 1);
+	continue; // Move on to next iteration
       }
     }
     else{
       cout<<"You entered an invalid character"<<endl;
       return;
     }
+  }
+
+  // Now move remaining from stack to queue
+  node* temp;
+  while(top != NULL){
+    temp = pop(top);
+    enqueue(front, rear, temp->value);
+  }
+
+  //Print out the queue
+  node* printer;
+  while(front != NULL){
+    printer = dequeue(front, rear);
+    cout<<printer->value<<" ";
   }
 
 }
