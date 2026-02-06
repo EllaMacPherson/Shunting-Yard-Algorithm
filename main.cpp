@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <string>
 #include "node.h"
 
 using namespace std;
@@ -15,44 +16,66 @@ node* peek(node*& top); // Look at top value of stack, and return it
 void enqueue(node*& front, node*& rear, char input); // Add to  tail of queue 
 node* dequeue(node*& front, node*& rear); // Remove head of queue and return it
 
+// Shunting Yard Algorithm
+void shuntingyard(string input); //Puts operators in stack, integers in queue, handle parantheses accordingly, than outputs the queue
+
+// Overall notes:
+//   - Take in infix notation -> convert to post fix with: _____
+//   - Create an expression tree with that post fix
+//   - Then allow user to choose infix, prefix, or postfix as output
+//   - ^^^^ USE BINARY TREE FOR THIS NO REUSE OF POSTFIX
+
 int main(){
 
   node* top = NULL; // Top of stack
 
   node* front = NULL; // front of queue
   node* rear = NULL; // end of queue
+
+  string input = ""; // Input holder
+  string noSpaces = "";
+
+  // Begin the program
+  cout<<"Enter a mathematical expression"<<endl;
+
+  getline(cin, input);
+
+  cout<<input<<endl;
+
+  // Remove spaces from string
+  for(int i = 0; i < input.length(); i++){
+    if(input[i] != ' '){
+      noSpaces += input[i]; // Add it to noSpaces
+    }
+  }
+
+  // Get postfix
+  shuntingyard(noSpaces, top, front, rear);
   
-  // Test queue
-  char input = '\0';
-  cout<<"What do you want to add to queue?"<<endl;
-  cin>>input;
-  cin.ignore();
+}
 
-  enqueue(front, rear, input);
-  cout<<front->value<<endl;
+// Convert infix input to postfix
+void shuntingyard(string input, node*& top, node*& front, node*& rear){
+  
+  // Iterator through each 
+  for(int i = 0; i < input.length(); i++){
+    // If its a number
+    if(int(input[i]) >= 48 && int(input[i]) <= 57){
+      // Push to the stack
+      push(input[i], top);
+    }
+    // If its an operator or parantheses
+    else if(){
+      if(){
+	// Do extra operation for parantheses
+      }
+    }
+    else{
+      cout<<"You entered an invalid character"<<endl;
+      return;
+    }
+  }
 
-  cout<<"What do you want to add to queue?"<<endl;
-  cin>>input;
-  cin.ignore();
-
-  enqueue(front, rear, input);
-  cout<<front->value<<rear->value<<endl;
-
-  cout<<"What do you want to add to queue?"<<endl;
-  cin>>input;
-  cin.ignore();
-
-  enqueue(front, rear, input);
-  cout<<front->value<<endl;
-  cout<<front->next->value<<endl;
-  cout<<front->next->next->value<<endl;
-
-  cout<<"dequeue test: " <<endl;
-  node* x = dequeue(front, rear);
-  cout<<front->value<<endl;
-  cout<<front->next->value<<endl;
-
-  cout<<"removed: "<<x->value<<endl;
 }
 
 // Dequeue for queue -- FUNCTIONING
