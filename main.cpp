@@ -59,16 +59,19 @@ void shuntingyard(string input, node*& top, node*& front, node*& rear){
   // Iterate through each char
   for(int i = 0; i < input.length(); i++){
     // If its a number
+    cout<<"iteration #: " << i <<endl;
+
     if(int(input[i]) >= 48 && int(input[i]) <= 57){
       // add it to queue
       enqueue(front, rear, input[i]);
     }
     
-    // If its an operator or left parantheses
+    // If its an operator or left parantheses NEED TO DO PRECEDENCE!!!
     else if(input[i] == '+' || input[i] == '-' || input[i] == '*' ||
 	    input[i] == '/' ||input[i] == '('){
       // Send it to the stack
       push(input[i], top);
+      //cout<<peek(top)->value<<endl;
 
     }
 
@@ -76,37 +79,33 @@ void shuntingyard(string input, node*& top, node*& front, node*& rear){
     // If its a right parantheses
     else if(input[i] == ')'){
       // Move items from stack into queue until we reach the
-      if(top->value == ')'){
-	node* d = pop(top);
-	delete d;
-	continue;
-      }
-      else{
-	char current = '\0';
-	while(current != '('){
-	  node* temp = pop(top);
-
-	  current = temp->value; // Current becomes what just was the top of the queue
-	  if(current == '('){
-	    break;
-	  }
-	  
-	  enqueue(front, rear, current); // Throw that non-paranthese into the queue
-	  
-	}
+      cout<<"detected an end parantheses"<<endl;
+      while(peek(top)->value != '('  && peek(top) != NULL){ //Checks if top is (
+	//if it isnt, throw that into the queue
+	cout<<"top when NOT (: " <<peek(top)->value<<endl;
+	node* temp = pop(top);
+	enqueue(front, rear, temp->value); // Throw that non-paranthese into the queue
+	// Pop sets top of stack to next
 	
-	// Once it hits that right paranthese pop it from the stack and delete it instead of moving to queue, and do nothing with input[i] so it gets skipped over and forever lost in the void YAYAYAYYA!!!
-	node* d = pop(top);
-	delete d;
-	//input.erase(i, 1);
-	continue; // Move on to next iteration
       }
+      cout<<"found matching parantheses"<<endl;
+      // Once it hits that right paranthese pop it from the stack and delete it instead of moving to queue, and do nothing with input[i] so it gets skipped over and forever lost in the void YAYAYAYYA!!!
+      
+      node* d = pop(top);
+      cout<<"popped and created node to delete"<<endl;
+      delete d;
+      
+      cout<<"Finished deletion"<<endl;
+      //input.erase(i, 1);
+      //continue;
     }
     else{
       cout<<"You entered an invalid character"<<endl;
       return;
     }
   }
+
+  cout<<"made it to end of iterations"<<endl;
 
   // Now move remaining from stack to queue
   node* temp;
@@ -166,8 +165,13 @@ node* peek(node*& top){
 // Pop for stack -- FUNCTIONING
 node* pop(node*& top){
   node* oldTop = top;
-  
-  top = top->next;
+
+  if(top->next != NULL){
+    top = top->next;
+  }
+  else{
+    top = NULL;
+  }
   
   return oldTop;
     
