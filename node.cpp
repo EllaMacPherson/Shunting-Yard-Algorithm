@@ -12,11 +12,13 @@ node::node(node* n, node* r, node* l, int v){
 
 // Destructer
 node::~node(){
-  delete next;
-  delete right;
-  delete left;
 
   right = NULL;
   left = NULL;
   next = NULL;
+
+  delete next;
+  delete right;
+  delete left;
+
 }

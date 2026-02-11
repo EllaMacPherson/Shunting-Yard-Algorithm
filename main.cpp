@@ -21,7 +21,7 @@ void shuntingyard(string input, node*& top, node*& front, node*& rear); //Puts o
 int precedence(char input);
 
 // Overall notes:
-//   - Take in infix notation -> convert to post fix with: _____
+//   - Take in infix notation -> convert to post fix with: SHUNTING YARD DONE!!!
 //   - Create an expression tree with that post fix
 //   - Then allow user to choose infix, prefix, or postfix as output
 //   - ^^^^ USE BINARY TREE FOR THIS NO REUSE OF POSTFIX
@@ -48,9 +48,16 @@ int main(){
     }
   }
 
-  cout<<noSpaces<<endl;
   // Get postfix
   shuntingyard(noSpaces, top, front, rear);
+
+  // Print out the postfix -> WHEN PARANTHESES ARE BAD OR EQUATION IS FIND WAY TO MAKE SURE WHOLE PROGRAM RESTARTS
+  cout<<"Postfix: "<<endl;
+  node* printer;
+  while(front != NULL){
+    printer = dequeue(front, rear);
+    cout<<printer->value<<" ";
+  }
   
 }
 
@@ -60,56 +67,70 @@ void shuntingyard(string input, node*& top, node*& front, node*& rear){
   // Iterate through each char
   for(int i = 0; i < input.length(); i++){
     // If its a number
-    cout<<"iteration #: " << i <<endl;
+    //    cout<<"iteration #: " << i <<endl;
 
     if(int(input[i]) >= 48 && int(input[i]) <= 57){
       // add it to queue
       
       enqueue(front, rear, input[i]);
-      cout<<"int added to ouput queue"<<endl;
+      //cout<<"Int added to output queue: " <<input[i] <<endl;
     }
     
     // If its an operator BREAKS HERE
     else if(input[i] == '+' || input[i] == '-' || input[i] == '*' ||
 	    input[i] == '/'){
       // Send it to the queue
-      while(peek(top)->value != '(' && precedence(peek(top)->value) > precedence(input[i])
-	    ||(precedence(peek(top)->value) == precedence(input[i]))){ // Longer while loop condition
-	  enqueue(front, rear, pop(top)->value);
-	  cout<<"Moved top of stack to queue"<<endl;
-	}
+      
+
+      while(top != NULL && peek(top)->value != '(' && precedence(peek(top)->value) >= precedence(input[i])){ // Longer while loop condition
+	//cout<<"in while loop" << i <<endl;
+	enqueue(front, rear, pop(top)->value);
+	//cout<<"Moved top of stack to queue"<<endl;
+      }
 	
       push(input[i], top);
-      cout<<"Operator added to the stack"<<endl;
-      //cout<<peek(top)->value<<endl;
+      //      cout<<"Operator added to the stack: "<<input[i]<<endl;
+      //      cout<<"new stack top: " <<peek(top)->value<<endl;
     }
     // If its a left parantheses
     else if(input[i] == '('){
       push(input[i], top); // Push it to stack
-      cout<<"left parantheses added to the stack"<<endl;
+      //      cout<<"left parantheses added to the stack: "<<input[i]<<endl;
     }
 
     // If its a right parantheses
     else if(input[i] == ')'){
       // Move items from stack into queue until we reach the
-      cout<<"detected an end parantheses"<<endl;
-      while(peek(top)->value != '('){ //Checks if top is (
-	if(top == NULL){
+      //cout<<"detected an end parantheses"<<endl;
+      while(peek(top)->value != '(' && top != NULL){ //Checks if top is (
+	// Move top of stack to queue
+	//cout<<"moved: " <<peek(top)->value<< "from stack to queue"<<endl;
+	if(top->next != NULL){
+	  enqueue(front, rear, pop(top)->value);
+	}else{
 	  cout<<"Mismatched parantheses, please enter an accurate equaton"<<endl;
 	  return;
 	}
-
-	enqueue(front, rear, pop(top)->value);
       }
+
+      // If stock ran out
+      //if(top == NULL){
+      //	cout<<"Mismatched parantheses, please enter an accurate equaton"<<endl;
+      //return;
+      //    }
+
+      // If it didnt delete the right parantheses -> hope my delete is working properly?
       
-      cout<<"found matching parantheses"<<endl;
+      //      cout<<"found matching parantheses"<<endl;
       // Once it hits that right paranthese pop it from the stack and delete it instead of moving to queue, and do nothing with input[i] so it gets skipped over and forever lost in the void YAYAYAYYA!!!
       
+      node* x = pop(top);
+      delete x;
       
-      cout<<"popped and created node to delete"<<endl;
-      delete pop(top);
-      
-      cout<<"Finished deletion"<<endl;
+      //      cout<<"finihshed delete"<<endl;
+      //      if(top != NULL){
+	//cout<<"New top of stack after delete: "<<top->value<<endl;
+      //      }
 
     }
     else{
@@ -118,27 +139,20 @@ void shuntingyard(string input, node*& top, node*& front, node*& rear){
     }
   }
 
-  cout<<"made it to end of iterations"<<endl;
+  //  cout<<"made it to end of iterations"<<endl;
 
   // Now move remaining from stack to queue
   node* temp;
   while(top != NULL){
     if(peek(top)->value == '('){
-      cout<<"mist matched paranthese at end of fun"<<endl;
+      cout<<"There are mismatched parantheses, please enter a valid expression"<<endl;
       return;
     }
-
+    // If not mismatchd paaranthese move it to the queue
     temp = pop(top);
     enqueue(front, rear, temp->value);
   }
-
-  //Print out the queue
-  node* printer;
-  while(front != NULL){
-    printer = dequeue(front, rear);
-    cout<<printer->value<<" ";
-  }
-
+  
 }
 
 int precedence(char input){
