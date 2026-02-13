@@ -20,6 +20,10 @@ node* dequeue(node*& front, node*& rear); // Remove head of queue and return it
 void shuntingyard(string input, node*& top, node*& front, node*& rear); //Puts operators in stack, integers in queue, handle parantheses accordingly, than outputs the queue
 int precedence(char input);
 
+// Binary Tree Algorithms
+void build(string input, node*& top); // Build the binary expression tree
+void pushNode(node* input, node*& top); // Push an already formed node and NOT a char
+
 // Overall notes:
 //   - Take in infix notation -> convert to post fix with: SHUNTING YARD DONE!!!
 //   - Create an expression tree with that post fix
@@ -35,6 +39,7 @@ int main(){
 
   string input = ""; // Input holder
   string noSpaces = "";
+  string treeInput = "";
 
   // Begin the program
   cout<<"Enter a mathematical expression"<<endl;
@@ -53,10 +58,76 @@ int main(){
 
   // Print out the postfix -> WHEN PARANTHESES ARE BAD OR EQUATION IS FIND WAY TO MAKE SURE WHOLE PROGRAM RESTARTS
   cout<<"Postfix: "<<endl;
+
   node* printer;
   while(front != NULL){
     printer = dequeue(front, rear);
-    cout<<printer->value<<" ";
+    treeInput += printer->value;
+  }
+  cout<<treeInput<<endl;
+
+  // Build binary expression tree
+  build(treeInput, top);
+  node* root = peek(top);
+  cout<<"Root: ";
+  cout<<root->value<<endl;
+  cout<<"Direct left of root: ";
+  cout<<root->left->value<<endl;
+  cout<<"testing hard right: "<<endl;
+  cout<<root->right->value<<endl;
+  cout<<root->right->right->value<<endl;
+  cout<<root->right->right->right->value;
+
+  // At this point the stack root is the head of the expression tree which i will use for all
+
+  input = "";
+  cout<<"Enter, PREFIX, INFIX, or POSTFIX to convert to corresponding notation"<<endl;
+  // NEXT STEPS!!
+  
+}
+
+
+// Build an expression tree -- FUNCTIONING
+void build(string input, node*& top){
+
+  // Iterate through the input
+  for(int i = 0; i < input.length(); i++){
+  //if char is int
+  //   pus hit to stack
+    if(int(input[i]) >= 48 && int(input[i]) <= 57){
+      
+      push(input[i], top);
+    }
+
+    
+    else if(input[i] == '+' || input[i] == '-' || input[i] == '*' ||
+	    input[i] == '/'){
+      node* leftS = pop(top);
+      node* rightS = pop(top);
+
+      node* treeNode = new node(NULL, leftS, rightS, input[i]);
+      pushNode(treeNode, top); // CREATE A SEPERATE PUSH JUST FOR TREE, but same top
+    }
+
+  //if char is operator
+  //    pop two values from the stack and make them its right and left child (in that order)
+  //    push the current node aain
+
+  // By here only element in the stack will be the root of the expression tree
+  }
+  cout<<"Finished building tree"<<endl;
+  return;
+}
+
+void pushNode(node* input, node*& top){
+
+  if(top == NULL){ // There is nothing else in the list
+    top = input; //replace char with input if need to
+  }
+  else{ // There is something in list, set that equal to next
+    node* temp = top;
+    top = input;
+    top->next = temp;
   }
   
 }
