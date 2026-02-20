@@ -23,6 +23,7 @@ int precedence(char input);
 // Binary Tree Algorithms
 void build(string input, node*& top); // Build the binary expression tree
 void pushNode(node* input, node*& top); // Push an already formed node and NOT a char
+void infix(node* prev, node* current) // Output infix notation from binary expression tree
 
 // Overall notes:
 //   - Take in infix notation -> convert to post fix with: SHUNTING YARD DONE!!!
@@ -71,18 +72,41 @@ int main(){
   node* root = peek(top);
   cout<<"Root: ";
   cout<<root->value<<endl;
-  cout<<"Direct left of root: ";
-  cout<<root->left->value<<endl;
-  cout<<"testing hard right: "<<endl;
-  cout<<root->right->value<<endl;
-  cout<<root->right->right->value<<endl;
-  cout<<root->right->right->right->value;
+//  cout<<"Direct left of root: ";
+  //  cout<<root->left->value<<endl;
+  //  cout<<"testing hard right: "<<endl;
+  //  cout<<root->right->value<<endl;
+  //  cout<<root->right->right->value<<endl;
+  //  cout<<root->right->right->right->value;
 
   // At this point the stack root is the head of the expression tree which i will use for all
 
   input = "";
   cout<<"Enter, PREFIX, INFIX, or POSTFIX to convert to corresponding notation"<<endl;
   // NEXT STEPS!!
+
+  if (input == "INFIX"){
+    infix(root, root);
+
+    // Print out infix 
+  }
+  
+}
+
+// Use tree to output infix notation, recursively
+void infix(node* prev, node* current){
+
+  // Move all the way  down to the left
+  if(current->left != NULL){
+    infix(current, current->left); 
+  }
+  else{ // Once at bottom left
+    enqueue(front, rear, current->value); // Add to print queue
+    if(current->right == NULL){ // If right is also NULL
+
+      infix(current, )
+    }
+  }
   
 }
 
