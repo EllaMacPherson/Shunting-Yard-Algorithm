@@ -3,6 +3,7 @@
 // Constructor
 node::node(node* n, node* r, node* l, int v){
 
+  // Set all me values
   next = n;
   right = r;
   left = l;

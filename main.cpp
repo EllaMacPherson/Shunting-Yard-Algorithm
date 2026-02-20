@@ -1,3 +1,13 @@
+/*
+  Shunting Yard Algorithm 2026 2/20
+  Ella MacPherson C++
+
+  - Take in infix notation -> convert to post fix with: shunting yard algorithm
+  - Create an expression tree with that post fix
+  - Then allow user to choose infix, prefix, or postfix as output
+
+ */
+
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -18,18 +28,16 @@ node* dequeue(node*& front, node*& rear); // Remove head of queue and return it
 
 // Shunting Yard Algorithm
 void shuntingyard(string input, node*& top, node*& front, node*& rear); //Puts operators in stack, integers in queue, handle parantheses accordingly, than outputs the queue
-int precedence(char input);
+int precedence(char input); // Return precedence of a character
 
 // Binary Tree Algorithms
 void build(string input, node*& top); // Build the binary expression tree
 void pushNode(node* input, node*& top); // Push an already formed node and NOT a char
-void infix(node* prev, node* current) // Output infix notation from binary expression tree
+void infix(node* current); // Output infix notation from binary expression tree
+void postfix(node* current); // Output postfix notation from binary expression tree
+void prefix(node* current); // Ouput prefix notation from binary expression
 
-// Overall notes:
-//   - Take in infix notation -> convert to post fix with: SHUNTING YARD DONE!!!
-//   - Create an expression tree with that post fix
-//   - Then allow user to choose infix, prefix, or postfix as output
-//   - ^^^^ USE BINARY TREE FOR THIS NO REUSE OF POSTFIX
+// Main start of program
 
 int main(){
 
@@ -39,8 +47,8 @@ int main(){
   node* rear = NULL; // end of queue
 
   string input = ""; // Input holder
-  string noSpaces = "";
-  string treeInput = "";
+  string noSpaces = ""; // Holds string with no spaces
+  string treeInput = ""; // What is fed into binary tree, in postfix
 
   // Begin the program
   cout<<"Enter a mathematical expression"<<endl;
@@ -57,92 +65,141 @@ int main(){
   // Get postfix
   shuntingyard(noSpaces, top, front, rear);
 
-  // Print out the postfix -> WHEN PARANTHESES ARE BAD OR EQUATION IS FIND WAY TO MAKE SURE WHOLE PROGRAM RESTARTS
-  cout<<"Postfix: "<<endl;
+  // Print out the postfix
+  cout<<"Postfix: ";
 
+  // Store current node
   node* printer;
+  // While not at end of queue
   while(front != NULL){
     printer = dequeue(front, rear);
+    // Add it to the string that will be put into the binary expression tree
     treeInput += printer->value;
   }
+
+  // Print out per instructions
   cout<<treeInput<<endl;
 
   // Build binary expression tree
   build(treeInput, top);
+  // Create variable to hold the root of tree and print to test
   node* root = peek(top);
-  cout<<"Root: ";
+  cout<<"Root of tree created: ";
   cout<<root->value<<endl;
-//  cout<<"Direct left of root: ";
-  //  cout<<root->left->value<<endl;
-  //  cout<<"testing hard right: "<<endl;
-  //  cout<<root->right->value<<endl;
-  //  cout<<root->right->right->value<<endl;
-  //  cout<<root->right->right->right->value;
 
-  // At this point the stack root is the head of the expression tree which i will use for all
+  // Repeat FOREVERR
+  while(true){
+    // Clear the input
+    input = "";
+  
+    cout<<"Enter, PREFIX, INFIX, or POSTFIX to convert to corresponding notation"<<endl;
+    getline(cin, input);
 
-  input = "";
-  cout<<"Enter, PREFIX, INFIX, or POSTFIX to convert to corresponding notation"<<endl;
-  // NEXT STEPS!!
-
-  if (input == "INFIX"){
-    infix(root, root);
-
-    // Print out infix 
+    // Check input and run corresponding functions...
+    if (input == "INFIX" || input == "infix"){
+      infix(root);
+      cout<<endl;
+    }
+    else if (input == "POSTFIX" || input == "postfix"){
+      postfix(root);
+      cout<<endl;
+    }
+    else if (input == "PREFIX" || input == "prefix"){
+      prefix(root);
+      cout<<endl;
+    }
+    else{
+      // They misentered something
+      cout<<"Enter a valid command"<<endl;
+    }
   }
+  
+}
+
+// Use tree to output prefix notation, recursively
+void prefix(node* current){
+  // Output current value
+  cout<<current->value<< " " ;
+
+  // Check left
+  if(current->left != NULL){
+    prefix(current->left);
+  }
+
+  // Check right
+  if(current->right != NULL){
+    prefix(current->right);
+  }
+}
+
+// Use tree to output postfix notation, recursively
+void postfix(node* current){
+
+  // Check Left
+  if(current->left != NULL){
+    postfix(current->left);
+  }
+
+  // Check right
+  if(current->right != NULL){
+    postfix(current->right);
+  }
+
+  // Output current value
+  cout<<current->value<< " " ;
   
 }
 
 // Use tree to output infix notation, recursively
-void infix(node* prev, node* current){
+void infix(node* current){
 
-  // Move all the way  down to the left
+  // Check left
   if(current->left != NULL){
-    infix(current, current->left); 
+    infix(current->left); 
   }
-  else{ // Once at bottom left
-    enqueue(front, rear, current->value); // Add to print queue
-    if(current->right == NULL){ // If right is also NULL
+  // Output current value
+  cout<<current->value<< " ";
 
-      infix(current, )
-    }
+  // Check right
+  if(current->right != NULL){ 
+    infix(current->right);
   }
   
 }
 
 
-// Build an expression tree -- FUNCTIONING
+// Build an expression tree
 void build(string input, node*& top){
 
   // Iterate through the input
   for(int i = 0; i < input.length(); i++){
-  //if char is int
-  //   pus hit to stack
+    //if char is int
     if(int(input[i]) >= 48 && int(input[i]) <= 57){
-      
+      // Push it to stack
       push(input[i], top);
     }
 
-    
+    // If its an operator
     else if(input[i] == '+' || input[i] == '-' || input[i] == '*' ||
-	    input[i] == '/'){
+	    input[i] == '/' || input[i] == '^'){
+      // Create left and right nodes by poping from stack
       node* leftS = pop(top);
       node* rightS = pop(top);
 
+      // Create a new node with all those values
       node* treeNode = new node(NULL, leftS, rightS, input[i]);
-      pushNode(treeNode, top); // CREATE A SEPERATE PUSH JUST FOR TREE, but same top
+
+      // Use a function to push the node to the top of the stack 
+      pushNode(treeNode, top); 
     }
-
-  //if char is operator
-  //    pop two values from the stack and make them its right and left child (in that order)
-  //    push the current node aain
-
-  // By here only element in the stack will be the root of the expression tree
   }
-  cout<<"Finished building tree"<<endl;
+
+  // Done iterating through input
   return;
 }
 
+
+// Push a node to the stack, not a value that then creates a npde
 void pushNode(node* input, node*& top){
 
   if(top == NULL){ // There is nothing else in the list
@@ -162,83 +219,55 @@ void shuntingyard(string input, node*& top, node*& front, node*& rear){
   // Iterate through each char
   for(int i = 0; i < input.length(); i++){
     // If its a number
-    //    cout<<"iteration #: " << i <<endl;
-
     if(int(input[i]) >= 48 && int(input[i]) <= 57){
       // add it to queue
-      
       enqueue(front, rear, input[i]);
-      //cout<<"Int added to output queue: " <<input[i] <<endl;
     }
     
-    // If its an operator BREAKS HERE
+    // If its an operator
     else if(input[i] == '+' || input[i] == '-' || input[i] == '*' ||
-	    input[i] == '/'){
-      // Send it to the queue
-      
-
-      while(top != NULL && peek(top)->value != '(' && precedence(peek(top)->value) >= precedence(input[i])){ // Longer while loop condition
-	//cout<<"in while loop" << i <<endl;
+	    input[i] == '/' || input[i] == '^'){
+      // Send it to the queue... I'm not sure if those while loop ever calls but everythng is working so I am NOT touching it
+      while(top != NULL && peek(top)->value != '(' && precedence(peek(top)->value) >= precedence(input[i])){
 	enqueue(front, rear, pop(top)->value);
-	//cout<<"Moved top of stack to queue"<<endl;
       }
 	
       push(input[i], top);
-      //      cout<<"Operator added to the stack: "<<input[i]<<endl;
-      //      cout<<"new stack top: " <<peek(top)->value<<endl;
     }
+    
     // If its a left parantheses
     else if(input[i] == '('){
       push(input[i], top); // Push it to stack
-      //      cout<<"left parantheses added to the stack: "<<input[i]<<endl;
     }
 
     // If its a right parantheses
     else if(input[i] == ')'){
-      // Move items from stack into queue until we reach the
-      //cout<<"detected an end parantheses"<<endl;
+      // Move items from stack into queue until we reach the end parantheses
       while(peek(top)->value != '(' && top != NULL){ //Checks if top is (
 	// Move top of stack to queue
-	//cout<<"moved: " <<peek(top)->value<< "from stack to queue"<<endl;
 	if(top->next != NULL){
-	  enqueue(front, rear, pop(top)->value);
+	  enqueue(front, rear, pop(top)->value); // Add to queue
 	}else{
 	  cout<<"Mismatched parantheses, please enter an accurate equaton"<<endl;
 	  return;
 	}
       }
 
-      // If stock ran out
-      //if(top == NULL){
-      //	cout<<"Mismatched parantheses, please enter an accurate equaton"<<endl;
-      //return;
-      //    }
-
-      // If it didnt delete the right parantheses -> hope my delete is working properly?
-      
-      //      cout<<"found matching parantheses"<<endl;
-      // Once it hits that right paranthese pop it from the stack and delete it instead of moving to queue, and do nothing with input[i] so it gets skipped over and forever lost in the void YAYAYAYYA!!!
-      
+      // Delete node
       node* x = pop(top);
       delete x;
-      
-      //      cout<<"finihshed delete"<<endl;
-      //      if(top != NULL){
-	//cout<<"New top of stack after delete: "<<top->value<<endl;
-      //      }
-
     }
-    else{
-      cout<<"You entered an invalid character"<<endl;
+    
+    else{ // Character doesn't match any of above
+      cout<<"You entered an invalid character, restart program to retry"<<endl;
       return;
     }
   }
 
-  //  cout<<"made it to end of iterations"<<endl;
-
   // Now move remaining from stack to queue
   node* temp;
   while(top != NULL){
+    // Verify that parantheses aren't cooked
     if(peek(top)->value == '('){
       cout<<"There are mismatched parantheses, please enter a valid expression"<<endl;
       return;
@@ -250,6 +279,7 @@ void shuntingyard(string input, node*& top, node*& front, node*& rear){
   
 }
 
+// Return precedence of a value
 int precedence(char input){
 
   if(input == '-' || input == '+'){ // Lowest precedence 
@@ -269,9 +299,10 @@ int precedence(char input){
   
 }
 
-// Dequeue for queue -- FUNCTIONING
+// Dequeue for queue
 node* dequeue(node*& front, node*& rear){
 
+  // Store old front
   node* oldFront = front;
 
   // Set new front to whats after it in queue
@@ -285,7 +316,7 @@ node* dequeue(node*& front, node*& rear){
   return oldFront;
 }
 
-// Enqueue for queue -- FUNCTIONING 
+// Enqueue for queue
 void enqueue(node*& front, node*& rear, char input){
 
   // Create new node with no next pointer
@@ -303,19 +334,22 @@ void enqueue(node*& front, node*& rear, char input){
   
 }
 
-// Peek for stack -- FUNCTIONING 
+// Peek for stack
 node* peek(node*& top){
   return top;
 }
 
-// Pop for stack -- FUNCTIONING
+// Pop for stack
 node* pop(node*& top){
+  // Store old top
   node* oldTop = top;
 
+  // If next is not NULL, set top to next item down
   if(top->next != NULL){
     top = top->next;
   }
   else{
+    // If not just set equal to NULL
     top = NULL;
   }
   
@@ -323,7 +357,7 @@ node* pop(node*& top){
     
 }
 
-// Push for stack -- FUNCTIONING
+// Push for stack
 void push(char input, node*& top){
 
   if(top == NULL){ // There is nothing else in the list
@@ -335,4 +369,6 @@ void push(char input, node*& top){
   }
   
 }
+
+// Hallelujah!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
